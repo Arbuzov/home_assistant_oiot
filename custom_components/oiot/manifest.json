@@ -1,0 +1,16 @@
+{
+  "domain": "oiot",
+  "name": "oiot",
+  "config_flow": true,
+  "documentation": "https://www.home-assistant.io/integrations/oiot",
+  "requirements": [],
+  "ssdp": [],
+  "zeroconf": [],
+  "homekit": {},
+  "dependencies": [],
+  "codeowners": [
+    "@arbuzov"
+  ],
+  "iot_class": "cloud_polling",
+  "version": "0.1.0"
+}
