@@ -12,7 +12,7 @@ from .const import OIOT_API_URL
 _LOGGER = logging.getLogger(__name__)
 
 
-class Measurment:
+class Measurement:
     def __init__(self, title, value, dimension):
         self.title = title
         self.value = value
@@ -34,7 +34,7 @@ class OiotSite:
         self.device_id = config.get(CONF_DEVICE_ID)
         self.device_name = ''
         self.result = {}
-        self.measurments = {}
+        self.measurements = {}
         self.site_url = f"{OIOT_API_URL}?id={self.user_id}&token={self.token}"
         if self.device_id is not None:
             self.site_url = self.site_url + f"&keys[]={self.device_id}"
@@ -58,27 +58,23 @@ class OiotSite:
         responce = await resp.json()
         self._parse_values(responce)
         await session.close()
-        return self.measurments
+        return self.measurements
 
     def _parse_values(self, responce: dict) -> dict:
         self.result = responce.get('result')
         self.device_id = list(self.result.keys())[0]
         self.device_name = self.result.get(self.device_id).get('TITLE')
-        self.measurments.setdefault(1, Measurment(
+        self.measurements.update({1: Measurement(
             self.result.get(self.device_id).get('COUNTER_NAME_1'),
             self.result.get(self.device_id).get('data')[0].get('counter_1'),
             self.result.get(self.device_id).get('MEASURE_1_NAME')
-        ))
-        self.measurments.setdefault(2, Measurment(
+        )})
+        self.measurements.update({2: Measurement(
             self.result.get(self.device_id).get('COUNTER_NAME_2'),
             self.result.get(self.device_id).get('data')[0].get('counter_2'),
             self.result.get(self.device_id).get('MEASURE_2_NAME')
-        ))
+        )})
         return
-
-
-def get_device_name(responce: dict, device_id: str) -> str:
-    return ''
 
 
 class CannotConnect(HomeAssistantError):
