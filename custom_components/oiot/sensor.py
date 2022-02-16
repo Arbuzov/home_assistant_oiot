@@ -71,6 +71,7 @@ class OiotSensor(CoordinatorEntity, SensorEntity):
     _attr_icon = "mdi:water-well"
 
     def __init__(self, coordinator, device_id='', sensor_id=1):
+        """Initialize."""
         super().__init__(coordinator)
         self.sensor_id = sensor_id
         self._attr_unique_id = f"{device_id}_{sensor_id}"

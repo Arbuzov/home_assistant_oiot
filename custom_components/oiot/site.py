@@ -1,3 +1,4 @@
+"""Connector to the OIOT site"""
 import logging
 
 import aiohttp
@@ -13,10 +14,13 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class Measurement:
-    def __init__(self, title, value, dimension):
+    """Container for the single measurement"""
+
+    def __init__(self, title, value, dimension, date=None):
         self.title = title
         self.value = value
         self.dimension = dimension
+        self.date = date
 
 
 class OiotSite:
@@ -52,7 +56,7 @@ class OiotSite:
             raise InvalidAuth()
 
     async def fetch_data(self):
-        """Request all data form the specific device"""
+        """Request all data for the specific device"""
         session = aiohttp.ClientSession()
         resp = await session.get(self.site_url)
         responce = await resp.json()
@@ -61,6 +65,7 @@ class OiotSite:
         return self.measurements
 
     def _parse_values(self, responce: dict) -> dict:
+        """Extracts measurements form the fetched values"""
         self.result = responce.get('result')
         self.device_id = list(self.result.keys())[0]
         self.device_name = self.result.get(self.device_id).get('TITLE')

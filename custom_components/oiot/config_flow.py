@@ -30,13 +30,12 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
 
     Data has the keys from STEP_USER_DATA_SCHEMA with values provided by the user.
     """
-    hub = OiotSite(data)
+    oiot_site = OiotSite(data)
 
-    if not await hub.authenticate():
+    if not await oiot_site.authenticate():
         raise InvalidAuth
 
-    # Return info that you want to store in the config entry.
-    return {"title": hub.device_name}
+    return {"title": oiot_site.device_name}
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
