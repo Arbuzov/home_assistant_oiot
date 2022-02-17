@@ -24,15 +24,11 @@ class Measurement:
 
 
 class OiotSite:
-    """Placeholder class to make tests pass.
-
-    TODO Remove this placeholder class and replace with things from your PyPI package.
-    """
+    """OIOT site connector"""
 
     def __init__(self, config: dict) -> None:
         """Initialize."""
         self.host = OIOT_API_URL
-        _LOGGER.info(config.get(CONF_CLIENT_ID))
         self.user_id = config.get(CONF_CLIENT_ID)
         self.token = config.get(CONF_API_TOKEN)
         self.device_id = config.get(CONF_DEVICE_ID)

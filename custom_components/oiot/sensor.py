@@ -15,7 +15,6 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_API_TOKEN, CONF_CLIENT_ID, CONF_DEVICE_ID
 from homeassistant.const import VOLUME_CUBIC_METERS
 from homeassistant.core import HomeAssistant
-from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
@@ -51,12 +50,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         _LOGGER,
         name="oiot",
         update_method=async_update_data,
-        update_interval=timedelta(seconds=300),
+        update_interval=timedelta(seconds=10),
     )
 
+    await oiot_site.fetch_data()
     async_add_entities([
-        OiotSensor(coordinator, oiot_site.device_id, 1),
-        OiotSensor(coordinator, oiot_site.device_id, 2)
+        OiotSensor(coordinator, oiot_site.device_id, oiot_site.device_name, 1),
+        OiotSensor(coordinator, oiot_site.device_id, oiot_site.device_name, 2)
     ])
     return True
 
@@ -70,11 +70,24 @@ class OiotSensor(CoordinatorEntity, SensorEntity):
     _attr_state_class = SensorStateClass.TOTAL_INCREASING
     _attr_icon = "mdi:water-well"
 
-    def __init__(self, coordinator, device_id='', sensor_id=1):
+    def __init__(self, coordinator, device_id='', device_name='New device', sensor_id=1):
         """Initialize."""
         super().__init__(coordinator)
         self.sensor_id = sensor_id
+        self.device_id = device_id
+        self.device_name = device_name
         self._attr_unique_id = f"{device_id}_{sensor_id}"
+
+    @property
+    def device_info(self):
+        return {
+            "identifiers": {
+                (DOMAIN, self.device_id)
+            },
+            "name": self.device_name,
+            "manufacturer": "OIOT",
+            "model": "Basic"
+        }
 
     @property
     def native_value(self):
