@@ -2,13 +2,12 @@
 import logging
 
 import aiohttp
-
-_LOGGER = logging.getLogger(__name__)
-
 from homeassistant.const import CONF_API_TOKEN, CONF_CLIENT_ID, CONF_DEVICE_ID
 from homeassistant.exceptions import HomeAssistantError
 
 from .const import OIOT_API_URL
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class Measurement:
