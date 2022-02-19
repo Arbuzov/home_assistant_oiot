@@ -32,10 +32,10 @@ jobs:
         with:
           path: custom_components
 
-      - name: Flake8 lint tests
-        uses: TrueBrain/actions-flake8@v2
-        with:
-          path: tests
+#      - name: Flake8 lint tests
+#        uses: TrueBrain/actions-flake8@v2
+#        with:
+#          path: tests
 
       - name: Verify import sorting
         run: isort --diff --check-only tests custom_components
