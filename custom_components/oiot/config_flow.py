@@ -4,23 +4,22 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+import voluptuous
 from homeassistant import config_entries
 from homeassistant.const import CONF_API_TOKEN, CONF_CLIENT_ID, CONF_DEVICE_ID
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
-import voluptuous as vol
 
 from .const import DOMAIN
-from .site import OiotSite, CannotConnect, InvalidAuth
-
+from .site import CannotConnect, InvalidAuth, OiotSite
 
 _LOGGER = logging.getLogger(__name__)
 
-STEP_USER_DATA_SCHEMA = vol.Schema(
+STEP_USER_DATA_SCHEMA = voluptuous.Schema(
     {
-        vol.Required(CONF_API_TOKEN): str,
-        vol.Required(CONF_CLIENT_ID): str,
-        vol.Required(CONF_DEVICE_ID): str,
+        voluptuous.Required(CONF_API_TOKEN): str,
+        voluptuous.Required(CONF_CLIENT_ID): str,
+        voluptuous.Required(CONF_DEVICE_ID): str,
     }
 )
 

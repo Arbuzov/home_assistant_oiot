@@ -1,30 +1,23 @@
 """Platform for sensor integration."""
 from __future__ import annotations
-from datetime import timedelta
 
-import logging
+from datetime import timedelta
+from logging import logging
 
 import async_timeout
-
-from homeassistant.components.sensor import (
-    SensorDeviceClass,
-    SensorEntity,
-    SensorStateClass,
-)
+from homeassistant.components.sensor import (SensorDeviceClass, SensorEntity,
+                                             SensorStateClass)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import VOLUME_CUBIC_METERS
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.update_coordinator import (
-    CoordinatorEntity,
-    DataUpdateCoordinator,
-    UpdateFailed,
-)
+from homeassistant.helpers.update_coordinator import (CoordinatorEntity,
+                                                      DataUpdateCoordinator,
+                                                      UpdateFailed)
 
 from .const import DOMAIN
-from .site import InvalidAuth, CannotConnect
-
+from .site import CannotConnect, InvalidAuth
 
 _LOGGER = logging.getLogger(__name__)
 
