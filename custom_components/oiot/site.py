@@ -3,7 +3,6 @@ import logging
 
 import aiohttp
 
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_API_TOKEN, CONF_CLIENT_ID, CONF_DEVICE_ID
 from homeassistant.exceptions import HomeAssistantError
 
@@ -35,9 +34,9 @@ class OiotSite:
         self.device_name = ''
         self.result = {}
         self.measurements = {}
-        self.site_url = f"{OIOT_API_URL}?id={self.user_id}&token={self.token}"
+        self.site_url = f'{OIOT_API_URL}?id={self.user_id}&token={self.token}'
         if self.device_id is not None:
-            self.site_url = self.site_url + f"&keys[]={self.device_id}"
+            self.site_url = self.site_url + f'&keys[]={self.device_id}'
 
     async def authenticate(self) -> bool:
         """Test if we can authenticate with the credentials provided."""
