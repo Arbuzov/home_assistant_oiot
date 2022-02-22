@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from logging import logging
+import logging
 
 import async_timeout
 from homeassistant.components.sensor import (SensorDeviceClass, SensorEntity,
