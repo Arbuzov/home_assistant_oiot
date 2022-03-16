@@ -1,8 +1,8 @@
 """Platform for sensor integration."""
 from __future__ import annotations
 
-from datetime import timedelta
 import logging
+from datetime import timedelta
 
 import async_timeout
 from homeassistant.components.sensor import (SensorDeviceClass, SensorEntity,
