@@ -1,5 +1,7 @@
 {
     "name": "OIOT.Sensor",
     "render_readme": true,
-    "country": "RU"
+    "country": "RU",
+    "homeassistant": "2024.11.3",
+    "hide_default_branch": true
 }

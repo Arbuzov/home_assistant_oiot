@@ -19,7 +19,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     oiot_site = OiotSite(entry.data)
     await oiot_site.authenticate()
     hass.data[DOMAIN][entry.unique_id] = oiot_site
-    hass.config_entries.async_setup_platforms(entry, PLATFORMS)
+
+    # Используем новый метод для установки платформ
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
 
 
