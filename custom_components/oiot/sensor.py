@@ -9,7 +9,7 @@ import async_timeout
 from homeassistant.components.sensor import (SensorDeviceClass, SensorEntity,
                                              SensorStateClass)
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import VOLUME_CUBIC_METERS
+from homeassistant.const import UnitOfVolume
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -61,8 +61,8 @@ class OiotSensor(CoordinatorEntity, SensorEntity):
     """Representation of a Sensor."""
 
     _attr_name = "Water consumption"
-    _attr_native_unit_of_measurement = VOLUME_CUBIC_METERS
-    _attr_suggested_unit_of_measurement = VOLUME_CUBIC_METERS
+    _attr_native_unit_of_measurement = UnitOfVolume.CUBIC_METERS
+    _attr_suggested_unit_of_measurement = UnitOfVolume.CUBIC_METERS
     _attr_device_class = SensorDeviceClass.VOLUME
     _attr_state_class = SensorStateClass.TOTAL_INCREASING
     _attr_icon = "mdi:water"
