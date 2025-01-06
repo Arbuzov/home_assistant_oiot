@@ -24,7 +24,9 @@ _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(
-    hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback
 ):
     """Set up a oiot consumption sensor."""
     oiot_site = hass.data[DOMAIN][entry.unique_id]
@@ -37,12 +39,12 @@ async def async_setup_entry(
         except InvalidAuth as err:
             raise ConfigEntryAuthFailed from err
         except CannotConnect as err:
-            raise UpdateFailed(f"Error communicating with API: {err}")
+            raise UpdateFailed(f'Error communicating with API: {err}')
 
     coordinator = DataUpdateCoordinator(
         hass,
         _LOGGER,
-        name="oiot",
+        name='oiot',
         update_method=async_update_data,
         update_interval=timedelta(seconds=10),
     )
@@ -50,8 +52,18 @@ async def async_setup_entry(
     await oiot_site.fetch_data()
     async_add_entities(
         [
-            OiotSensor(coordinator, oiot_site.device_id, oiot_site.device_name, 1),
-            OiotSensor(coordinator, oiot_site.device_id, oiot_site.device_name, 2),
+            OiotSensor(
+                coordinator,
+                oiot_site.device_id,
+                oiot_site.device_name,
+                1
+            ),
+            OiotSensor(
+                coordinator,
+                oiot_site.device_id,
+                oiot_site.device_name,
+                2
+            ),
         ]
     )
     return True
@@ -60,30 +72,30 @@ async def async_setup_entry(
 class OiotSensor(CoordinatorEntity, SensorEntity):
     """Representation of a Sensor."""
 
-    _attr_name = "Water consumption"
+    _attr_name = 'Water consumption'
     _attr_native_unit_of_measurement = UnitOfVolume.CUBIC_METERS
     _attr_suggested_unit_of_measurement = UnitOfVolume.CUBIC_METERS
     _attr_device_class = SensorDeviceClass.VOLUME
     _attr_state_class = SensorStateClass.TOTAL_INCREASING
-    _attr_icon = "mdi:water"
+    _attr_icon = 'mdi:water'
 
     def __init__(
-        self, coordinator, device_id="", device_name="New device", sensor_id=1
+        self, coordinator, device_id='', device_name='New device', sensor_id=1
     ):
         """Initialize."""
         super().__init__(coordinator)
         self.sensor_id = sensor_id
         self.device_id = device_id
         self.device_name = device_name
-        self._attr_unique_id = f"{device_id}_{sensor_id}"
+        self._attr_unique_id = f'{device_id}_{sensor_id}'
 
     @property
     def device_info(self):
         return {
-            "identifiers": {(DOMAIN, self.device_id)},
-            "name": self.device_name,
-            "manufacturer": "OIOT",
-            "model": "Basic",
+            'identifiers': {(DOMAIN, self.device_id)},
+            'name': self.device_name,
+            'manufacturer': 'OIOT',
+            'model': 'Basic',
         }
 
     @property
