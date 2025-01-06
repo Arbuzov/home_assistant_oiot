@@ -1,17 +1,17 @@
 {
   "domain": "oiot",
   "name": "oiot",
-  "config_flow": true,
-  "documentation": "https://www.home-assistant.io/integrations/oiot",
-  "requirements": [],
-  "ssdp": [],
-  "zeroconf": [],
-  "homekit": {},
-  "dependencies": [],
   "codeowners": [
     "@arbuzov"
   ],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://www.home-assistant.io/integrations/oiot",
+  "homekit": {},
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/Arbuzov/home_assistant_oiot/issues",
-  "version": "1.1.0"
+  "requirements": [],
+  "ssdp": [],
+  "version": "1.1.1",
+  "zeroconf": []
 }
