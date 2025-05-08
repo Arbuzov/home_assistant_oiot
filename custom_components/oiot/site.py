@@ -3,7 +3,9 @@ import logging
 
 import aiohttp
 from homeassistant.const import CONF_API_TOKEN, CONF_CLIENT_ID, CONF_DEVICE_ID
+from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .const import OIOT_API_URL
 
@@ -23,7 +25,7 @@ class Measurement:
 class OiotSite:
     """OIOT site connector"""
 
-    def __init__(self, config: dict) -> None:
+    def __init__(self, config: dict, hass: HomeAssistant) -> None:
         """Initialize."""
         self.host = OIOT_API_URL
         self.user_id = config.get(CONF_CLIENT_ID)
@@ -32,13 +34,14 @@ class OiotSite:
         self.device_name = ''
         self.result = {}
         self.measurements = {}
+        self.hass = hass
         self.site_url = f'{OIOT_API_URL}?id={self.user_id}&token={self.token}'
         if self.device_id is not None:
             self.site_url = self.site_url + f'&keys[]={self.device_id}'
 
     async def authenticate(self) -> bool:
         """Test if we can authenticate with the credentials provided."""
-        session = aiohttp.ClientSession()
+        session = async_get_clientsession(self.hass)
         resp = await session.get(self.site_url)
         responce = await resp.json()
         if 'success' in responce:
@@ -72,7 +75,6 @@ class OiotSite:
             self.result.get(self.device_id).get('data')[0].get('counter_2'),
             self.result.get(self.device_id).get('MEASURE_2_NAME')
         )})
-        return
 
 
 class CannotConnect(HomeAssistantError):

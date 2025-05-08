@@ -32,7 +32,7 @@ async def validate_input(
     Data has the keys from STEP_USER_DATA_SCHEMA
     with values provided by the user.
     """
-    oiot_site = OiotSite(data)
+    oiot_site = OiotSite(data, hass)
 
     if not await oiot_site.authenticate():
         raise InvalidAuth
