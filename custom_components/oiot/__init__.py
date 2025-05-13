@@ -16,7 +16,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     if DOMAIN not in hass.data:
         hass.data[DOMAIN] = {}
-    oiot_site = OiotSite(entry.data)
+    oiot_site = OiotSite(entry.data, hass)
     await oiot_site.authenticate()
     hass.data[DOMAIN][entry.unique_id] = oiot_site
 
