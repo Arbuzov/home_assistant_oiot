@@ -34,6 +34,7 @@ class OiotSite:
         self.device_name = ''
         self.result = {}
         self.measurements = {}
+        self.last_metrics_update = None
         self.hass = hass
         self.site_url = f'{OIOT_API_URL}?id={self.user_id}&token={self.token}'
         if self.device_id is not None:
@@ -65,15 +66,25 @@ class OiotSite:
         self.result = responce.get('result')
         self.device_id = list(self.result.keys())[0]
         self.device_name = self.result.get(self.device_id).get('TITLE')
+        data = self.result.get(self.device_id).get('data')[0]
+        self.last_metrics_update = (
+            data.get('date')
+            or data.get('DATE')
+            or data.get('date_update')
+            or data.get('updated_at')
+            or data.get('created_at')
+        )
         self.measurements.update({1: Measurement(
             self.result.get(self.device_id).get('COUNTER_NAME_1'),
-            self.result.get(self.device_id).get('data')[0].get('counter_1'),
-            self.result.get(self.device_id).get('MEASURE_1_NAME')
+            data.get('counter_1'),
+            self.result.get(self.device_id).get('MEASURE_1_NAME'),
+            self.last_metrics_update
         )})
         self.measurements.update({2: Measurement(
             self.result.get(self.device_id).get('COUNTER_NAME_2'),
-            self.result.get(self.device_id).get('data')[0].get('counter_2'),
-            self.result.get(self.device_id).get('MEASURE_2_NAME')
+            data.get('counter_2'),
+            self.result.get(self.device_id).get('MEASURE_2_NAME'),
+            self.last_metrics_update
         )})
 
 
