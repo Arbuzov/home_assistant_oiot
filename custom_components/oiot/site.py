@@ -110,7 +110,9 @@ class OiotSite:
         data_entries = device_data.get('data')
         if not isinstance(data_entries, list) or not data_entries:
             self.last_metrics_update = None
-            self.measurements.update({'last_metrics_update': self.last_metrics_update})
+            self.measurements.update({
+                'last_metrics_update': self.last_metrics_update
+            })
             return self.measurements
 
         data = data_entries[0]
@@ -137,7 +139,9 @@ class OiotSite:
             device_data.get('MEASURE_2_NAME'),
             self.last_metrics_update
         )})
-        self.measurements.update({'last_metrics_update': self.last_metrics_update})
+        self.measurements.update({
+            'last_metrics_update': self.last_metrics_update
+        })
 
         return self.measurements
 
