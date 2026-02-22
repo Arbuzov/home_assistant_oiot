@@ -1,6 +1,6 @@
 """Connector to the OIOT site"""
-from datetime import datetime
 import logging
+from datetime import datetime
 
 import aiohttp
 from homeassistant.const import CONF_API_TOKEN, CONF_CLIENT_ID, CONF_DEVICE_ID
