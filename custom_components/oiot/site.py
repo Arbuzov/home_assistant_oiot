@@ -1,5 +1,6 @@
 """Connector to the OIOT site"""
 import logging
+from datetime import datetime
 
 import aiohttp
 from homeassistant.const import CONF_API_TOKEN, CONF_CLIENT_ID, CONF_DEVICE_ID
@@ -10,6 +11,40 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from .const import OIOT_API_URL
 
 _LOGGER = logging.getLogger(__name__)
+
+
+def normalize_last_metrics_update(value):
+    """Normalize various timestamp representations to datetime."""
+    if not value:
+        return None
+
+    if isinstance(value, datetime):
+        return value
+
+    if isinstance(value, str):
+        normalized_value = value.strip()
+        if not normalized_value:
+            return None
+
+        try:
+            return datetime.fromisoformat(normalized_value)
+        except ValueError:
+            pass
+
+        for time_format in (
+            '%Y-%m-%d %H:%M:%S',
+            '%Y-%m-%d %H:%M',
+            '%d.%m.%Y %H:%M:%S',
+            '%d.%m.%Y %H:%M',
+            '%Y/%m/%d %H:%M:%S',
+            '%Y/%m/%d %H:%M',
+        ):
+            try:
+                return datetime.strptime(normalized_value, time_format)
+            except ValueError:
+                continue
+
+    return None
 
 
 class Measurement:
@@ -34,6 +69,7 @@ class OiotSite:
         self.device_name = ''
         self.result = {}
         self.measurements = {}
+        self.last_metrics_update = None
         self.hass = hass
         self.site_url = f'{OIOT_API_URL}?id={self.user_id}&token={self.token}'
         if self.device_id is not None:
@@ -62,19 +98,52 @@ class OiotSite:
 
     def _parse_values(self, responce: dict) -> dict:
         """Extracts measurements form the fetched values"""
-        self.result = responce.get('result')
+        self.result = responce.get('result') or {}
+        self.measurements = {}
+
+        if not self.result:
+            return self.measurements
+
         self.device_id = list(self.result.keys())[0]
-        self.device_name = self.result.get(self.device_id).get('TITLE')
+        device_data = self.result.get(self.device_id) or {}
+        self.device_name = device_data.get('TITLE')
+        data_entries = device_data.get('data')
+        if not isinstance(data_entries, list) or not data_entries:
+            self.last_metrics_update = None
+            self.measurements.update({
+                'last_metrics_update': self.last_metrics_update
+            })
+            return self.measurements
+
+        data = data_entries[0]
+        raw_last_metrics_update = (
+            data.get('date')
+            or data.get('DATE')
+            or data.get('date_update')
+            or data.get('updated_at')
+            or data.get('created_at')
+        )
+        self.last_metrics_update = normalize_last_metrics_update(
+            raw_last_metrics_update
+        )
+
         self.measurements.update({1: Measurement(
-            self.result.get(self.device_id).get('COUNTER_NAME_1'),
-            self.result.get(self.device_id).get('data')[0].get('counter_1'),
-            self.result.get(self.device_id).get('MEASURE_1_NAME')
+            device_data.get('COUNTER_NAME_1'),
+            data.get('counter_1'),
+            device_data.get('MEASURE_1_NAME'),
+            self.last_metrics_update
         )})
         self.measurements.update({2: Measurement(
-            self.result.get(self.device_id).get('COUNTER_NAME_2'),
-            self.result.get(self.device_id).get('data')[0].get('counter_2'),
-            self.result.get(self.device_id).get('MEASURE_2_NAME')
+            device_data.get('COUNTER_NAME_2'),
+            data.get('counter_2'),
+            device_data.get('MEASURE_2_NAME'),
+            self.last_metrics_update
         )})
+        self.measurements.update({
+            'last_metrics_update': self.last_metrics_update
+        })
+
+        return self.measurements
 
 
 class CannotConnect(HomeAssistantError):
