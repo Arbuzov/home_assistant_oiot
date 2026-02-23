@@ -15,7 +15,7 @@ jobs:
         - name: Get Version
           id: get_version
           run: |
-              echo ::set-output name=version::$(cat custom_components/delonghi_primadonna/manifest.json | jq -r '.version')
+              echo ::set-output name=version::$(cat custom_components/oiot/manifest.json | jq -r '.version')
         - name: Create Release
           uses: marvinpinto/action-automatic-releases@latest
           with:
