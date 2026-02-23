@@ -1,39 +1,26 @@
-name: Release
+name: Create Release
 
 on:
-  push:
-    tags:
-      - "v*"
-
-permissions:
-  contents: write
+    push:
+      branches:
+        - develop
+        - master
 
 jobs:
-  release:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Validate tag against manifest version
-        run: |
-          TAG_VERSION="${GITHUB_REF_NAME#v}"
-          MANIFEST_VERSION=$(jq -r '.version' custom_components/oiot/manifest.json)
-
-          if [ "$TAG_VERSION" != "$MANIFEST_VERSION" ]; then
-            echo "Tag version ($TAG_VERSION) doesn't match manifest version ($MANIFEST_VERSION)"
-            exit 1
-          fi
-
-      - name: Create release archive
-        run: |
-          mkdir -p dist
-          cd custom_components
-          zip -r ../dist/oiot.zip oiot
-
-      - name: Publish GitHub release
-        uses: softprops/action-gh-release@v2
-        with:
-          generate_release_notes: true
-          files: dist/oiot.zip
+    build:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v6
+        - name: Get Version
+          id: get_version
+          run: |
+              echo ::set-output name=version::$(cat custom_components/delonghi_primadonna/manifest.json | jq -r '.version')
+        - name: Create Release
+          uses: marvinpinto/action-automatic-releases@latest
+          with:
+              repo_token: ${{ secrets.GITHUB_TOKEN }}
+              title: ${{ github.ref == 'refs/heads/develop' && 'Test release' || 'Release' }} ${{ steps.get_version.outputs.version }}${{ github.ref == 'refs/heads/develop' && '-beta' || '' }}
+              automatic_release_tag: ${{ steps.get_version.outputs.version }}${{ github.ref == 'refs/heads/develop' && '-beta' || '' }}
+              draft: false
+              prerelease: ${{ github.ref == 'refs/heads/develop' }}
