@@ -64,6 +64,11 @@ async def async_setup_entry(
                 oiot_site.device_name,
                 2
             ),
+            OiotLastMetricsUpdateSensor(
+                coordinator,
+                oiot_site.device_id,
+                oiot_site.device_name,
+            ),
         ]
     )
     return True
@@ -102,7 +107,41 @@ class OiotSensor(CoordinatorEntity, SensorEntity):
     def native_value(self):
         """Return the value reported by the sensor."""
         if self.coordinator.data is not None:
-            self._attr_name = self.coordinator.data.get(self.sensor_id).title
-            return self.coordinator.data.get(self.sensor_id).value
-        else:
-            return None
+            measurement = self.coordinator.data.get(self.sensor_id)
+            if measurement is not None:
+                self._attr_name = measurement.title
+                return measurement.value
+
+        return None
+
+
+class OiotLastMetricsUpdateSensor(CoordinatorEntity, SensorEntity):
+    """Representation of last metrics update date sensor."""
+
+    _attr_name = 'Last metrics update'
+    _attr_device_class = SensorDeviceClass.TIMESTAMP
+    _attr_icon = 'mdi:calendar-clock'
+
+    def __init__(self, coordinator, device_id='', device_name='New device'):
+        """Initialize."""
+        super().__init__(coordinator)
+        self.device_id = device_id
+        self.device_name = device_name
+        self._attr_unique_id = f'{device_id}_last_metrics_update'
+
+    @property
+    def device_info(self):
+        return {
+            'identifiers': {(DOMAIN, self.device_id)},
+            'name': self.device_name,
+            'manufacturer': 'OIOT',
+            'model': 'Basic',
+        }
+
+    @property
+    def native_value(self):
+        """Return last metrics update date."""
+        if self.coordinator.data is not None:
+            return self.coordinator.data.get('last_metrics_update')
+
+        return None
